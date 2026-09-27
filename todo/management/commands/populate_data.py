@@ -1,4 +1,7 @@
+import random
+
 from django.core.management.base import BaseCommand
+from django.contrib.auth.models import User
 from django.utils import timezone
 from faker import Faker
 
@@ -25,19 +28,31 @@ class Command(BaseCommand):
         priorities = list(Priority.objects.all())
         categories = list(Category.objects.all())
 
-        for _ in range(10):
-            Task.objects.create(
-                title=fake.sentence(nb_words=5),
-                description=fake.paragraph(nb_sentences=3),
-                deadline=timezone.make_aware(fake.date_time_this_month()),
-                status=fake.random_element(elements=statuses),
-                category=fake.random_element(elements=categories),
-                priority=fake.random_element(elements=priorities),
-            )
+        # Create two test users, plus include any already-existing users
+        test_usernames = ["alice", "bob"]
+        for username in test_usernames:
+            user, created = User.objects.get_or_create(username=username)
+            if created:
+                user.set_password("password123")
+                user.save()
 
-        self.stdout.write(self.style.SUCCESS("10 Tasks created!"))
+        users = list(User.objects.all())
 
-        tasks = Task.objects.all()
+        tasks = []
+        for user in users:
+            for _ in range(5):
+                task = Task.objects.create(
+                    user=user,
+                    title=fake.sentence(nb_words=5),
+                    description=fake.paragraph(nb_sentences=3),
+                    deadline=timezone.make_aware(fake.date_time_this_month()),
+                    status=fake.random_element(elements=statuses),
+                    category=random.choice(categories),
+                    priority=random.choice(priorities),
+                )
+                tasks.append(task)
+
+        self.stdout.write(self.style.SUCCESS(f"Created {len(tasks)} Tasks across {len(users)} users!"))
 
         for task in tasks:
             for _ in range(2):
