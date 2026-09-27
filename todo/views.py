@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -10,6 +11,32 @@ class HomePageView(ListView):
     context_object_name = "tasks"
     template_name = "home.html"
     paginate_by = 5
+
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        query = self.request.GET.get("q")
+
+        if query:
+            qs = qs.filter(
+                Q(title__icontains=query) | Q(description__icontains=query)
+            )
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["total_tasks"] = Task.objects.count()
+        context["completed_tasks"] = Task.objects.filter(status="Completed").count()
+        context["pending_tasks"] = Task.objects.filter(status="Pending").count()
+        return context
+
+    def get_ordering(self):
+        allowed = ["title", "deadline", "status"]
+        sort_by = self.request.GET.get("sort_by")
+        if sort_by in allowed:
+            return sort_by
+        return "title"
+    
 
 
 class TaskCreateView(CreateView):
