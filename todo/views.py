@@ -10,7 +10,7 @@ from faker import Faker
 import random
 from .models import Task, Priority, Category, SubTask, Note
 from .models import Task, Priority, Category
-from .forms import TaskForm
+from .forms import TaskForm, CategoryForm
 
 fake = Faker()
 
@@ -123,3 +123,29 @@ def bulk_task_action(request):
             return redirect("home")
 
     return redirect("home")
+
+class CategoryListView(LoginRequiredMixin, ListView):
+    model = Category
+    context_object_name = "categories"
+    template_name = "category_list.html"
+    paginate_by = 10
+
+
+class CategoryCreateView(LoginRequiredMixin, CreateView):
+    model = Category
+    form_class = CategoryForm
+    template_name = "category_form.html"
+    success_url = reverse_lazy("category-list")
+
+
+class CategoryUpdateView(LoginRequiredMixin, UpdateView):
+    model = Category
+    form_class = CategoryForm
+    template_name = "category_form.html"
+    success_url = reverse_lazy("category-list")
+
+
+class CategoryDeleteView(LoginRequiredMixin, DeleteView):
+    model = Category
+    template_name = "category_confirm_delete.html"
+    success_url = reverse_lazy("category-list")

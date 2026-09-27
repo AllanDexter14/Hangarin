@@ -37,6 +37,14 @@
     </div>
 </div>
 
+<form method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="q" class="form-control" placeholder="Search tasks..."
+               value="{{ request.GET.q }}">
+        <button type="submit" class="btn btn-outline-secondary">Search</button>
+    </div>
+</form>
+
 <form method="get" class="row g-2 align-items-center mb-3">
     <input type="hidden" name="q" value="{{ request.GET.q }}">
     <div class="col-auto">

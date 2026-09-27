@@ -15,6 +15,13 @@
         <span class="navbar-brand mb-0 h1">Hangarin</span>
 
         {% if user.is_authenticated %}
+        <div class="me-auto ms-4">
+            <a href="{% url 'home' %}" class="text-white text-decoration-none me-3">Tasks</a>
+            <a href="{% url 'category-list' %}" class="text-white text-decoration-none me-3">Categories</a>
+        </div>
+        {% endif %}
+
+        {% if user.is_authenticated %}
         <span class="text-white me-3">Hi, {{ user.username }}</span>
         <a href="{% url 'account_logout' %}" class="btn btn-outline-light btn-sm">Logout</a>
         {% else %}

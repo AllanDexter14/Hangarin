@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}
+    {% if object %}Edit Category{% else %}Add Category{% endif %} - Hangarin
+{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">
+    {% if object %}Edit Category{% else %}Add Category{% endif %}
+</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}
