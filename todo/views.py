@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -6,12 +7,11 @@ from .models import Task
 from .forms import TaskForm
 
 
-class HomePageView(ListView):
+class HomePageView(LoginRequiredMixin, ListView):
     model = Task
     context_object_name = "tasks"
     template_name = "home.html"
     paginate_by = 5
-
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -36,23 +36,23 @@ class HomePageView(ListView):
         if sort_by in allowed:
             return sort_by
         return "title"
-    
 
 
-class TaskCreateView(CreateView):
+class TaskCreateView(LoginRequiredMixin, CreateView):
     model = Task
     form_class = TaskForm
     template_name = "task_form.html"
     success_url = reverse_lazy("home")
 
 
-class TaskUpdateView(UpdateView):
+class TaskUpdateView(LoginRequiredMixin, UpdateView):
     model = Task
     form_class = TaskForm
     template_name = "task_form.html"
     success_url = reverse_lazy("home")
 
-class TaskDeleteView(DeleteView):
+
+class TaskDeleteView(LoginRequiredMixin, DeleteView):
     model = Task
     template_name = "task_confirm_delete.html"
     success_url = reverse_lazy("home")

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load socialaccount %}
+{% load widget_tweaks %}
+{% block title %}Login - Hangarin{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h2 class="text-center mb-4">Welcome Back</h2>
+
+                <div class="d-grid mb-3">
+    <a href="{% provider_login_url 'google' %}" class="btn btn-outline-danger">
+        Sign in with Google
+    </a>
+</div>
+<div class="d-grid mb-3">
+    <a href="{% provider_login_url 'github' %}" class="btn btn-outline-dark">
+        Sign in with GitHub
+    </a>
+</div>
+
+                <div class="text-center text-muted mb-3">or</div>
+
+                <form method="post" action="{% url 'account_login' %}">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                        <p class="mb-0">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label class="form-label">Username or Email</label>
+                        {% render_field form.login class="form-control" %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        {% render_field form.password class="form-control" %}
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Sign In</button>
+                    </div>
+                </form>
+
+                <p class="text-center mt-3 mb-0">
+                    Don't have an account? <a href="{% url 'account_signup' %}">Sign up</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
