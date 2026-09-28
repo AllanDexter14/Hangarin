@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.github',
     'widget_tweaks',
+    'pwa',
     'todo',
 ]
 SITE_ID = 2
@@ -156,3 +157,24 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+# Progressive Web App Settings 
+PWA_APP_NAME = 'Hangarin'
+PWA_APP_DESCRIPTION = "A Progressive Web App version of Hangarin"
+PWA_APP_THEME_COLOR = '#212529'
+PWA_APP_BACKGROUND_COLOR = '#FFFFFF'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'portrait'
+PWA_APP_START_URL = '/'
+PWA_APP_STATUS_BAR_COLOR = 'default'
+PWA_APP_ICONS = [
+    {'src': '/static/images/icons/icon-192x192.png', 'sizes': '192x192'},
+    {'src': '/static/images/icons/icon-512x512.png', 'sizes': '512x512'},
+]
+PWA_APP_ICONS_APPLE = [
+    {'src': '/static/images/icons/icon-192x192.png', 'sizes': '192x192'},
+    {'src': '/static/images/icons/icon-512x512.png', 'sizes': '512x512'},
+]
+PWA_APP_DIR = 'ltr'
+PWA_SERVICE_WORKER_PATH = BASE_DIR / 'static' / 'js' / 'serviceworker.js'

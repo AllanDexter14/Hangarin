@@ -12,7 +12,8 @@ from todo.views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
-
+    path('', include('pwa.urls')),
+    
     path('', HomePageView.as_view(), name='home'),
     path('task/add', TaskCreateView.as_view(), name='task-add'),
     path('task/<int:pk>/edit', TaskUpdateView.as_view(), name='task-edit'),
