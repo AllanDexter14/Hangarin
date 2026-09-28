@@ -6,7 +6,7 @@
     <h1 class="m-0">SubTasks</h1>
     <a href="{% url 'subtask-add' %}" class="btn btn-success">Add SubTask</a>
 </div>
-
+{% include 'includes/search_form.html' with placeholder="Search subtasks or parent task..." %}
 <table class="table table-striped">
     <thead><tr><th>Title</th><th>Status</th><th>Parent Task</th><th>Action</th></tr></thead>
     <tbody>

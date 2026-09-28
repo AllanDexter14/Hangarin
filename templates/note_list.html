@@ -7,6 +7,25 @@
     <a href="{% url 'note-add' %}" class="btn btn-success">Add Note</a>
 </div>
 
+{% include 'includes/search_form.html' with placeholder="Search notes or task name..." %}
+
+<form method="get" class="row g-2 align-items-center mb-3">
+    <input type="hidden" name="q" value="{{ request.GET.q }}">
+    <div class="col-auto">
+        <label class="col-form-label">Sort by</label>
+    </div>
+    <div class="col-auto">
+        <select name="sort_by" class="form-select form-select-sm">
+            <option value="newest" {% if request.GET.sort_by == "newest" %}selected{% endif %}>Newest first</option>
+            <option value="oldest" {% if request.GET.sort_by == "oldest" %}selected{% endif %}>Oldest first</option>
+            <option value="task" {% if request.GET.sort_by == "task" %}selected{% endif %}>Task name</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary btn-sm">Sort</button>
+    </div>
+</form>
+
 <table class="table table-striped">
     <thead><tr><th>Task</th><th>Content</th><th>Created</th><th>Action</th></tr></thead>
     <tbody>
@@ -21,7 +40,7 @@
             </td>
         </tr>
         {% empty %}
-        <tr><td colspan="4" class="text-center text-muted">No notes yet.</td></tr>
+        <tr><td colspan="4" class="text-center text-muted">No notes found.</td></tr>
         {% endfor %}
     </tbody>
 </table>

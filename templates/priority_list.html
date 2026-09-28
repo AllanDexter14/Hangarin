@@ -6,7 +6,7 @@
     <h1 class="m-0">Priorities</h1>
     <a href="{% url 'priority-add' %}" class="btn btn-success">Add Priority</a>
 </div>
-
+{% include 'includes/search_form.html' with placeholder="Search priorities..." %}
 <table class="table table-striped">
     <thead><tr><th>Name</th><th>Action</th></tr></thead>
     <tbody>

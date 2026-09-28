@@ -36,6 +36,8 @@ class HomePageView(LoginRequiredMixin, ListView):
         context["total_tasks"] = Task.objects.filter(user=self.request.user).count()
         context["completed_tasks"] = Task.objects.filter(user=self.request.user, status="Completed").count()
         context["pending_tasks"] = Task.objects.filter(user=self.request.user, status="Pending").count()
+        context["total_categories"] = Category.objects.count()
+        context["total_priorities"] = Priority.objects.count()
         return context
 
     def get_ordering(self):
@@ -129,12 +131,25 @@ def bulk_task_action(request):
 
     return redirect("home")
 
+def apply_search(qs, query, fields):
+    """Filter qs to rows where ANY of the given fields contains the query."""
+    if query:
+        condition = Q()
+        for field in fields:
+            condition |= Q(**{f"{field}__icontains": query})
+        qs = qs.filter(condition)
+    return qs
+
 class CategoryListView(LoginRequiredMixin, ListView):
     model = Category
     context_object_name = "categories"
     template_name = "category_list.html"
     paginate_by = 10
+    ordering = ["name"]
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return apply_search(qs, self.request.GET.get("q"), ["name"])
 
 class CategoryCreateView(LoginRequiredMixin, CreateView):
     model = Category
@@ -176,6 +191,10 @@ class PriorityListView(LoginRequiredMixin, ListView):
     paginate_by = 10
     ordering = ["name"]
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return apply_search(qs, self.request.GET.get("q"), ["name"])
+
 
 class PriorityCreateView(LoginRequiredMixin, ModelNameMixin, CreateView):
     model = Priority
@@ -204,10 +223,13 @@ class SubTaskListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return (SubTask.objects
-                .filter(parent_task__user=self.request.user)
-                .select_related("parent_task")
-                .order_by("parent_task__title", "title"))
+        qs = (SubTask.objects
+              .filter(parent_task__user=self.request.user)
+              .select_related("parent_task")
+              .order_by("parent_task__title", "title"))
+        return apply_search(
+            qs, self.request.GET.get("q"), ["title", "parent_task__title"]
+        )
 
 
 class SubTaskCreateView(LoginRequiredMixin, UserFormKwargsMixin, ModelNameMixin, CreateView):
@@ -236,17 +258,28 @@ class SubTaskDeleteView(LoginRequiredMixin, ModelNameMixin, DeleteView):
 
 
 
+
 class NoteListView(LoginRequiredMixin, ListView):
     model = Note
     context_object_name = "notes"
     template_name = "note_list.html"
     paginate_by = 10
 
+    SORT_OPTIONS = {
+        "newest": "-created_at",
+        "oldest": "created_at",
+        "task": "task__title",
+    }
+
     def get_queryset(self):
-        return (Note.objects
-                .filter(task__user=self.request.user)
-                .select_related("task")
-                .order_by("-created_at"))
+        qs = (Note.objects
+              .filter(task__user=self.request.user)
+              .select_related("task"))
+        qs = apply_search(
+            qs, self.request.GET.get("q"), ["content", "task__title"]
+        )
+        sort_by = self.request.GET.get("sort_by")
+        return qs.order_by(self.SORT_OPTIONS.get(sort_by, "-created_at"))
 
 
 class NoteCreateView(LoginRequiredMixin, UserFormKwargsMixin, ModelNameMixin, CreateView):
