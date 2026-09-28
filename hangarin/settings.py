@@ -11,21 +11,21 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-b2mjwi4!sx6h%95-ahf+dlpmw8r8dl#ccogx#9&6!gte@bzv*+'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-b2mjwi4!sx6h%95-ahf+dlpmw8r8dl#ccogx#9&6!gte@bzv*+')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+if os.environ.get('DJANGO_ALLOWED_HOST'):
+    ALLOWED_HOSTS.append(os.environ['DJANGO_ALLOWED_HOST'])
 
 
 # Application definition
@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'pwa',
     'todo',
 ]
-SITE_ID = 2
+SITE_ID = int(os.environ.get('DJANGO_SITE_ID', '2'))
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -58,7 +58,7 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]   
+]
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -80,6 +80,8 @@ ACCOUNT_SIGNUP_FIELDS = [
     "password1*",
     "password2*",
 ]
+
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'http' if DEBUG else 'https'
 
 ROOT_URLCONF = 'hangarin.urls'
 
@@ -147,6 +149,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 
 # Email
@@ -158,7 +161,8 @@ MAILERS = {
     },
 }
 
-# Progressive Web App Settings 
+
+# Progressive Web App Settings
 PWA_APP_NAME = 'Hangarin'
 PWA_APP_DESCRIPTION = "A Progressive Web App version of Hangarin"
 PWA_APP_THEME_COLOR = '#212529'
