@@ -9,8 +9,7 @@ from django.urls import reverse_lazy
 from faker import Faker
 import random
 from .models import Task, Priority, Category, SubTask, Note
-from .models import Task, Priority, Category
-from .forms import TaskForm, CategoryForm
+from .forms import TaskForm, CategoryForm, PriorityForm, SubTaskForm, NoteForm
 
 fake = Faker()
 
@@ -64,11 +63,17 @@ class TaskUpdateView(LoginRequiredMixin, UpdateView):
     template_name = "task_form.html"
     success_url = reverse_lazy("home")
 
+    def get_queryset(self):
+        return Task.objects.filter(user=self.request.user)
+
 
 class TaskDeleteView(LoginRequiredMixin, DeleteView):
     model = Task
     template_name = "task_confirm_delete.html"
     success_url = reverse_lazy("home")
+
+    def get_queryset(self):
+        return Task.objects.filter(user=self.request.user)
 
 
 @login_required
@@ -149,3 +154,122 @@ class CategoryDeleteView(LoginRequiredMixin, DeleteView):
     model = Category
     template_name = "category_confirm_delete.html"
     success_url = reverse_lazy("category-list")
+
+class UserFormKwargsMixin:
+    """Passes the logged-in user into the form so dropdowns can be filtered."""
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+class ModelNameMixin:
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["model_name"] = self.model._meta.verbose_name.title()
+        return context
+
+
+class PriorityListView(LoginRequiredMixin, ListView):
+    model = Priority
+    context_object_name = "priorities"
+    template_name = "priority_list.html"
+    paginate_by = 10
+    ordering = ["name"]
+
+
+class PriorityCreateView(LoginRequiredMixin, ModelNameMixin, CreateView):
+    model = Priority
+    form_class = PriorityForm
+    template_name = "crud_form.html"
+    success_url = reverse_lazy("priority-list")
+
+
+class PriorityUpdateView(LoginRequiredMixin, ModelNameMixin, UpdateView):
+    model = Priority
+    form_class = PriorityForm
+    template_name = "crud_form.html"
+    success_url = reverse_lazy("priority-list")
+
+
+class PriorityDeleteView(LoginRequiredMixin, ModelNameMixin, DeleteView):
+    model = Priority
+    template_name = "crud_confirm_delete.html"
+    success_url = reverse_lazy("priority-list")
+
+
+class SubTaskListView(LoginRequiredMixin, ListView):
+    model = SubTask
+    context_object_name = "subtasks"
+    template_name = "subtask_list.html"
+    paginate_by = 10
+
+    def get_queryset(self):
+        return (SubTask.objects
+                .filter(parent_task__user=self.request.user)
+                .select_related("parent_task")
+                .order_by("parent_task__title", "title"))
+
+
+class SubTaskCreateView(LoginRequiredMixin, UserFormKwargsMixin, ModelNameMixin, CreateView):
+    model = SubTask
+    form_class = SubTaskForm
+    template_name = "crud_form.html"
+    success_url = reverse_lazy("subtask-list")
+
+class SubTaskUpdateView(LoginRequiredMixin, UserFormKwargsMixin, ModelNameMixin, UpdateView):
+    model = SubTask
+    form_class = SubTaskForm
+    template_name = "crud_form.html"
+    success_url = reverse_lazy("subtask-list")
+
+    def get_queryset(self):
+        return SubTask.objects.filter(parent_task__user=self.request.user)
+
+
+class SubTaskDeleteView(LoginRequiredMixin, ModelNameMixin, DeleteView):
+    model = SubTask
+    template_name = "crud_confirm_delete.html"
+    success_url = reverse_lazy("subtask-list")
+
+    def get_queryset(self):
+        return SubTask.objects.filter(parent_task__user=self.request.user)
+
+
+
+class NoteListView(LoginRequiredMixin, ListView):
+    model = Note
+    context_object_name = "notes"
+    template_name = "note_list.html"
+    paginate_by = 10
+
+    def get_queryset(self):
+        return (Note.objects
+                .filter(task__user=self.request.user)
+                .select_related("task")
+                .order_by("-created_at"))
+
+
+class NoteCreateView(LoginRequiredMixin, UserFormKwargsMixin, ModelNameMixin, CreateView):
+    model = Note
+    form_class = NoteForm
+    template_name = "crud_form.html"
+    success_url = reverse_lazy("note-list")
+
+
+class NoteUpdateView(LoginRequiredMixin, UserFormKwargsMixin, ModelNameMixin, UpdateView):
+    model = Note
+    form_class = NoteForm
+    template_name = "crud_form.html"
+    success_url = reverse_lazy("note-list")
+
+    def get_queryset(self):
+        return Note.objects.filter(task__user=self.request.user)
+
+
+class NoteDeleteView(LoginRequiredMixin, ModelNameMixin, DeleteView):
+    model = Note
+    template_name = "crud_confirm_delete.html"
+    success_url = reverse_lazy("note-list")
+
+    def get_queryset(self):
+        return Note.objects.filter(task__user=self.request.user)

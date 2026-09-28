@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}SubTasks - Hangarin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="m-0">SubTasks</h1>
+    <a href="{% url 'subtask-add' %}" class="btn btn-success">Add SubTask</a>
+</div>
+
+<table class="table table-striped">
+    <thead><tr><th>Title</th><th>Status</th><th>Parent Task</th><th>Action</th></tr></thead>
+    <tbody>
+        {% for subtask in subtasks %}
+        <tr>
+            <td>{{ subtask.title }}</td>
+            <td>{{ subtask.status }}</td>
+            <td>{{ subtask.parent_task_name }}</td>
+            <td>
+                <a href="{% url 'subtask-edit' subtask.pk %}" class="btn btn-sm btn-primary">Edit</a>
+                <a href="{% url 'subtask-delete' subtask.pk %}" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="text-center text-muted">No subtasks yet.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% include 'includes/simple_pagination.html' %}
+{% endblock %}
