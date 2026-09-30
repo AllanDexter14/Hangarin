@@ -182,4 +182,4 @@ PWA_APP_ICONS_APPLE = [
     {'src': '/static/images/icons/icon-512x512.png', 'sizes': '512x512'},
 ]
 PWA_APP_DIR = 'ltr'
-PWA_SERVICE_WORKER_PATH = BASE_DIR / 'static' / 'js' / 'serviceworker.js'
+PWA_SERVICE_WORKER_PATH = BASE_DIR / 'serviceworker.js'
