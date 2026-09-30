@@ -11,6 +11,10 @@ import random
 from .models import Task, Priority, Category, SubTask, Note
 from .forms import TaskForm, CategoryForm, PriorityForm, SubTaskForm, NoteForm
 
+from django.contrib import messages
+
+
+
 fake = Faker()
 
 
@@ -83,6 +87,10 @@ def generate_sample_tasks(request):
     statuses = ["Pending", "In Progress", "Completed"]
     priorities = list(Priority.objects.all())
     categories = list(Category.objects.all())
+
+    if not priorities or not categories:
+        messages.error(request, "Add at least one category and one priority first.")
+        return redirect("home")
 
     for _ in range(5):
         task = Task.objects.create(
