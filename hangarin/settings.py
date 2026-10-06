@@ -50,6 +50,7 @@ INSTALLED_APPS = [
 ]
 SITE_ID = int(os.environ.get('DJANGO_SITE_ID', '2'))
 
+CSRF_TRUSTED_ORIGINS = ['https://allandexter14.pythonanywhere.com']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
