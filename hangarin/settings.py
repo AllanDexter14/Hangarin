@@ -50,8 +50,6 @@ INSTALLED_APPS = [
 ]
 SITE_ID = int(os.environ.get('DJANGO_SITE_ID', '2'))
 
-SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
-SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
