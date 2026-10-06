@@ -1,6 +1,6 @@
 // Hangarin service worker
 // Bump this version whenever you change this file so old caches get cleared.
-const CACHE_NAME = 'hangarin-cache-v4';
+const CACHE_NAME = 'hangarin-cache-v5';
 
 // Only things that never change per user. We deliberately do NOT cache '/'
 // or any page: those show each user's own tasks and must always be fresh.
