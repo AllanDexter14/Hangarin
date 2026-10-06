@@ -45,8 +45,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.github',
     'widget_tweaks',
-    'pwa',
     'todo',
+    'pwa',
 ]
 SITE_ID = int(os.environ.get('DJANGO_SITE_ID', '2'))
 
